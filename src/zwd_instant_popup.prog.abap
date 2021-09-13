@@ -56,13 +56,16 @@ FORM execute.
   ENDIF.
 
   " check exist class
-  FIND ALL OCCURRENCES OF '/' IN p_wdcomp MATCH OFFSET lv_offset.
-  IF sy-subrc EQ 0.
-    lv_offset = lv_offset + 1.
-    ls_assist-clsname = p_wdcomp(lv_offset) && 'CL_' && p_wdcomp+lv_offset.
-  ELSE.
-    ls_assist-clsname = 'ZCL_' && p_wdcomp.
-  ENDIF.
+  CASE p_wdcomp(1).
+    WHEN '/'.
+      FIND ALL OCCURRENCES OF '/' IN p_wdcomp MATCH OFFSET lv_offset.
+      lv_offset = lv_offset + 1.
+      ls_assist-clsname = p_wdcomp(lv_offset) && 'CL_' && p_wdcomp+lv_offset.
+    WHEN 'Z' OR 'Y'.
+      ls_assist-clsname = p_wdcomp(1) && 'CL_' && p_wdcomp.
+    WHEN OTHERS.
+      ls_assist-clsname = 'CL_' && p_wdcomp.
+  ENDCASE.
   CALL FUNCTION 'SEO_CLASS_EXISTENCE_CHECK'
     EXPORTING
       clskey       = ls_assist
