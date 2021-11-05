@@ -351,7 +351,7 @@ FORM execute.
   APPEND `    DATA: lv_event_id    TYPE fpm_event_id,` TO ls_method_source-source.
   APPEND `          lo_fpm         TYPE REF TO if_fpm,` TO ls_method_source-source.
   APPEND `          lo_event       TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
-  APPEND `          lo_event_start TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
+  APPEND `          lo_event_org   TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
   APPEND `          lt_key         TYPE TABLE OF string,` TO ls_method_source-source.
   APPEND `          lv_key         TYPE string,` TO ls_method_source-source.
   APPEND `          lr_value       TYPE REF TO data,` TO ls_method_source-source.
@@ -383,12 +383,12 @@ FORM execute.
   APPEND `` TO ls_method_source-source.
   APPEND `      mo_event_data->get_value(` TO ls_method_source-source.
   APPEND `        EXPORTING` TO ls_method_source-source.
-  APPEND `          iv_key   = 'IO_EVENT'` TO ls_method_source-source.
+  APPEND `          iv_key   = 'IO_EVENT_ORIG'` TO ls_method_source-source.
   APPEND `        IMPORTING` TO ls_method_source-source.
-  APPEND `          ev_value = lo_event_start` TO ls_method_source-source.
+  APPEND `          ev_value = lo_event_org` TO ls_method_source-source.
   APPEND `      ).` TO ls_method_source-source.
-  APPEND `      IF lo_event_start IS NOT INITIAL.` TO ls_method_source-source.
-  APPEND `        lo_event->ms_source_uibb = lo_event_start->ms_source_uibb.` TO ls_method_source-source.
+  APPEND `      IF lo_event_org IS NOT INITIAL.` TO ls_method_source-source.
+  APPEND `        lo_event->ms_source_uibb = lo_event_org->ms_source_uibb.` TO ls_method_source-source.
   APPEND `      ENDIF.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `      lo_fpm->raise_event( lo_event ).` TO ls_method_source-source.
@@ -580,12 +580,26 @@ FORM execute.
   ls_param-typtype = 1.
   ls_param-type = 'STRING'.
   APPEND ls_param TO lt_param.
+  CLEAR: ls_param.
+  ls_param-clsname = ls_assist-clsname.
+  ls_param-cmpname = 'WD_POPUP'.
+  ls_param-sconame = 'IO_EVENT_DATA'.
+  ls_param-paroptionl = abap_true.
+  ls_param-cmptype = 1.
+  ls_param-parpasstyp = 1.
+  ls_param-typtype = 3.
+  ls_param-type = 'IF_FPM_PARAMETER'.
+  APPEND ls_param TO lt_param.
   CLEAR: ls_method_source.
   ls_method_source-cpdname = 'WD_POPUP'.
   APPEND `  METHOD wd_popup.` TO ls_method_source-source.
   APPEND `    DATA: lo_event_data TYPE REF TO if_fpm_parameter.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
-  APPEND `    CREATE OBJECT lo_event_data TYPE cl_fpm_parameter.` TO ls_method_source-source.
+  APPEND `    IF io_event_data IS NOT INITIAL.` TO ls_method_source-source.
+  APPEND `      lo_event_data = io_event_data.` TO ls_method_source-source.
+  APPEND `    ELSE.` TO ls_method_source-source.
+  APPEND `      CREATE OBJECT lo_event_data TYPE cl_fpm_parameter.` TO ls_method_source-source.
+  APPEND `    ENDIF.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `    lo_event_data->set_value(` TO ls_method_source-source.
   APPEND `      EXPORTING` TO ls_method_source-source.
@@ -613,11 +627,11 @@ FORM execute.
   CLEAR: ls_param.
   ls_param-clsname = ls_assist-clsname.
   ls_param-cmpname = 'FPM_POPUP'.
-  ls_param-sconame = 'IO_EVENT'.
+  ls_param-sconame = 'IO_EVENT_ORIG'.
+  ls_param-paroptionl = abap_true.
   ls_param-cmptype = 1.
   ls_param-parpasstyp = 1.
   ls_param-typtype = 3.
-  ls_param-paroptionl = abap_true.
   ls_param-type = 'CL_FPM_EVENT'.
   APPEND ls_param TO lt_param.
   CLEAR: ls_param.
@@ -629,12 +643,26 @@ FORM execute.
   ls_param-typtype = 1.
   ls_param-type = 'STRING'.
   APPEND ls_param TO lt_param.
+  CLEAR: ls_param.
+  ls_param-clsname = ls_assist-clsname.
+  ls_param-cmpname = 'FPM_POPUP'.
+  ls_param-sconame = 'IO_EVENT_DATA'.
+  ls_param-paroptionl = abap_true.
+  ls_param-cmptype = 1.
+  ls_param-parpasstyp = 1.
+  ls_param-typtype = 3.
+  ls_param-type = 'IF_FPM_PARAMETER'.
+  APPEND ls_param TO lt_param.
   CLEAR: ls_method_source.
   ls_method_source-cpdname = 'FPM_POPUP'.
   APPEND `  METHOD fpm_popup.` TO ls_method_source-source.
   APPEND `    DATA: lo_event_data TYPE REF TO if_fpm_parameter.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
-  APPEND `    CREATE OBJECT lo_event_data TYPE cl_fpm_parameter.` TO ls_method_source-source.
+  APPEND `    IF io_event_data IS NOT INITIAL.` TO ls_method_source-source.
+  APPEND `      lo_event_data = io_event_data.` TO ls_method_source-source.
+  APPEND `    ELSE.` TO ls_method_source-source.
+  APPEND `      CREATE OBJECT lo_event_data TYPE cl_fpm_parameter.` TO ls_method_source-source.
+  APPEND `    ENDIF.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `    lo_event_data->set_value(` TO ls_method_source-source.
   APPEND `      EXPORTING` TO ls_method_source-source.
@@ -642,11 +670,11 @@ FORM execute.
   APPEND `        iv_value = iv_callback_event_id` TO ls_method_source-source.
   APPEND `    ).` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
-  APPEND `    IF io_event IS NOT INITIAL.` TO ls_method_source-source.
+  APPEND `    IF io_event_orig IS NOT INITIAL.` TO ls_method_source-source.
   APPEND `      lo_event_data->set_value(` TO ls_method_source-source.
   APPEND `        EXPORTING` TO ls_method_source-source.
-  APPEND `          iv_key   = 'IO_EVENT'` TO ls_method_source-source.
-  APPEND `          iv_value = io_event` TO ls_method_source-source.
+  APPEND `          iv_key   = 'IO_EVENT_ORIG'` TO ls_method_source-source.
+  APPEND `          iv_value = io_event_orig` TO ls_method_source-source.
   APPEND `      ).` TO ls_method_source-source.
   APPEND `    ENDIF.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
