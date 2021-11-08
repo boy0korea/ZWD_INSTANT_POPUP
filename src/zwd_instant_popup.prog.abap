@@ -325,6 +325,21 @@ FORM execute.
 
   CLEAR: ls_method.
   ls_method-clsname = ls_assist-clsname.
+  ls_method-cmpname = 'README'.
+  ls_method-exposure = 1.
+  ls_method-state = 1.
+  ls_method-mtdtype = 2.
+  ls_method-mtddecltyp = 1.
+  APPEND ls_method TO lt_method.
+  CLEAR: ls_method_source.
+  ls_method_source-cpdname = 'README'.
+  APPEND `  METHOD readme.` TO ls_method_source-source.
+  APPEND `* https://github.com/boy0korea/ZWD_INSTANT_POPUP` TO ls_method_source-source.
+  APPEND `  ENDMETHOD.` TO ls_method_source-source.
+  APPEND ls_method_source TO lt_method_source.
+
+  CLEAR: ls_method.
+  ls_method-clsname = ls_assist-clsname.
   ls_method-cmpname = 'CLASS_CONSTRUCTOR'.
   ls_method-exposure = 2.
   ls_method-state = 1.
@@ -533,6 +548,7 @@ FORM execute.
   CLEAR: ls_method_source.
   ls_method_source-cpdname = 'OPEN_POPUP'.
   APPEND `  METHOD open_popup.` TO ls_method_source-source.
+  APPEND `* Please call fpm_popup( ) or wd_popup( ).` TO ls_method_source-source.
   APPEND `    DATA: lo_comp_usage TYPE REF TO if_wd_component_usage.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `    cl_wdr_runtime_services=>get_component_usage(` TO ls_method_source-source.
@@ -566,6 +582,7 @@ FORM execute.
   ls_param-clsname = ls_assist-clsname.
   ls_param-cmpname = 'WD_POPUP'.
   ls_param-sconame = 'IO_VIEW'.
+  ls_param-editorder = 1.
   ls_param-cmptype = 1.
   ls_param-parpasstyp = 1.
   ls_param-typtype = 3.
@@ -575,6 +592,7 @@ FORM execute.
   ls_param-clsname = ls_assist-clsname.
   ls_param-cmpname = 'WD_POPUP'.
   ls_param-sconame = 'IV_CALLBACK_ACTION'.
+  ls_param-editorder = 2.
   ls_param-cmptype = 1.
   ls_param-parpasstyp = 1.
   ls_param-typtype = 1.
@@ -584,6 +602,7 @@ FORM execute.
   ls_param-clsname = ls_assist-clsname.
   ls_param-cmpname = 'WD_POPUP'.
   ls_param-sconame = 'IO_EVENT_DATA'.
+  ls_param-editorder = 3.
   ls_param-paroptionl = abap_true.
   ls_param-cmptype = 1.
   ls_param-parpasstyp = 1.
@@ -628,6 +647,7 @@ FORM execute.
   ls_param-clsname = ls_assist-clsname.
   ls_param-cmpname = 'FPM_POPUP'.
   ls_param-sconame = 'IO_EVENT_ORIG'.
+  ls_param-editorder = 1.
   ls_param-paroptionl = abap_true.
   ls_param-cmptype = 1.
   ls_param-parpasstyp = 1.
@@ -638,6 +658,7 @@ FORM execute.
   ls_param-clsname = ls_assist-clsname.
   ls_param-cmpname = 'FPM_POPUP'.
   ls_param-sconame = 'IV_CALLBACK_EVENT_ID'.
+  ls_param-editorder = 2.
   ls_param-cmptype = 1.
   ls_param-parpasstyp = 1.
   ls_param-typtype = 1.
@@ -647,6 +668,7 @@ FORM execute.
   ls_param-clsname = ls_assist-clsname.
   ls_param-cmpname = 'FPM_POPUP'.
   ls_param-sconame = 'IO_EVENT_DATA'.
+  ls_param-editorder = 3.
   ls_param-paroptionl = abap_true.
   ls_param-cmptype = 1.
   ls_param-parpasstyp = 1.
