@@ -797,4 +797,22 @@ FORM execute.
       p_include = lv_include.
   lo_cross->index_actualize( ).
 
+  CALL FUNCTION 'WB_TREE_UPDATE_OBJECTLIST'
+    EXPORTING
+      p_object_type       = swbm_c_type_wdy_component
+      p_object_name       = p_wdcomp
+      p_operation         = swbm_c_op_insert
+      p_package_name      = lv_devclass
+      p_author            = sy-uname
+    EXCEPTIONS
+      error_occured       = 1
+      invalid_operation   = 2
+      no_objectlist_found = 3
+      long_object_name    = 4
+      OTHERS              = 5.
+  IF sy-subrc <> 0.
+    MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+      WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+  ENDIF.
+
 ENDFORM.
