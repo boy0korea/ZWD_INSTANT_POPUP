@@ -366,7 +366,7 @@ FORM execute.
   APPEND `    DATA: lv_event_id    TYPE fpm_event_id,` TO ls_method_source-source.
   APPEND `          lo_fpm         TYPE REF TO if_fpm,` TO ls_method_source-source.
   APPEND `          lo_event       TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
-  APPEND `          lo_event_org   TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
+  APPEND `          lo_event_orig  TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
   APPEND `          lt_key         TYPE TABLE OF string,` TO ls_method_source-source.
   APPEND `          lv_key         TYPE string,` TO ls_method_source-source.
   APPEND `          lr_value       TYPE REF TO data,` TO ls_method_source-source.
@@ -400,10 +400,10 @@ FORM execute.
   APPEND `        EXPORTING` TO ls_method_source-source.
   APPEND `          iv_key   = 'IO_EVENT_ORIG'` TO ls_method_source-source.
   APPEND `        IMPORTING` TO ls_method_source-source.
-  APPEND `          ev_value = lo_event_org` TO ls_method_source-source.
+  APPEND `          ev_value = lo_event_orig` TO ls_method_source-source.
   APPEND `      ).` TO ls_method_source-source.
-  APPEND `      IF lo_event_org IS NOT INITIAL.` TO ls_method_source-source.
-  APPEND `        lo_event->ms_source_uibb = lo_event_org->ms_source_uibb.` TO ls_method_source-source.
+  APPEND `      IF lo_event_orig IS NOT INITIAL.` TO ls_method_source-source.
+  APPEND `        lo_event->ms_source_uibb = lo_event_orig->ms_source_uibb.` TO ls_method_source-source.
   APPEND `      ENDIF.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `      lo_fpm->raise_event( lo_event ).` TO ls_method_source-source.
