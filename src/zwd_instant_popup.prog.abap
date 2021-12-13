@@ -363,18 +363,18 @@ FORM execute.
   CLEAR: ls_method_source.
   ls_method_source-cpdname = 'DO_CALLBACK'.
   APPEND `  METHOD do_callback.` TO ls_method_source-source.
-  APPEND `    DATA: lv_event_id    TYPE fpm_event_id,` TO ls_method_source-source.
-  APPEND `          lo_fpm         TYPE REF TO if_fpm,` TO ls_method_source-source.
-  APPEND `          lo_event       TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
-  APPEND `          lo_event_orig  TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
-  APPEND `          lt_key         TYPE TABLE OF string,` TO ls_method_source-source.
-  APPEND `          lv_key         TYPE string,` TO ls_method_source-source.
-  APPEND `          lr_value       TYPE REF TO data,` TO ls_method_source-source.
-  APPEND `          lv_action      TYPE string,` TO ls_method_source-source.
-  APPEND `          lo_view        TYPE REF TO cl_wdr_view,` TO ls_method_source-source.
-  APPEND `          lo_action      TYPE REF TO if_wdr_action,` TO ls_method_source-source.
-  APPEND `          lt_param       TYPE wdr_name_value_list,` TO ls_method_source-source.
-  APPEND `          ls_param       TYPE wdr_name_value.` TO ls_method_source-source.
+  APPEND `    DATA: lv_event_id   TYPE fpm_event_id,` TO ls_method_source-source.
+  APPEND `          lo_fpm        TYPE REF TO if_fpm,` TO ls_method_source-source.
+  APPEND `          lo_event      TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
+  APPEND `          lo_event_orig TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
+  APPEND `          lt_key        TYPE TABLE OF string,` TO ls_method_source-source.
+  APPEND `          lv_key        TYPE string,` TO ls_method_source-source.
+  APPEND `          lr_value      TYPE REF TO data,` TO ls_method_source-source.
+  APPEND `          lv_action     TYPE string,` TO ls_method_source-source.
+  APPEND `          lo_view       TYPE REF TO cl_wdr_view,` TO ls_method_source-source.
+  APPEND `          lo_action     TYPE REF TO if_wdr_action,` TO ls_method_source-source.
+  APPEND `          lt_param      TYPE wdr_name_value_list,` TO ls_method_source-source.
+  APPEND `          ls_param      TYPE wdr_name_value.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `**********************************************************************` TO ls_method_source-source.
@@ -596,7 +596,7 @@ FORM execute.
   ls_param-cmptype = 1.
   ls_param-parpasstyp = 1.
   ls_param-typtype = 1.
-  ls_param-type = 'STRING'.
+  ls_param-type = 'CLIKE'.
   APPEND ls_param TO lt_param.
   CLEAR: ls_param.
   ls_param-clsname = ls_assist-clsname.
@@ -662,7 +662,7 @@ FORM execute.
   ls_param-cmptype = 1.
   ls_param-parpasstyp = 1.
   ls_param-typtype = 1.
-  ls_param-type = 'STRING'.
+  ls_param-type = 'CLIKE'.
   APPEND ls_param TO lt_param.
   CLEAR: ls_param.
   ls_param-clsname = ls_assist-clsname.
