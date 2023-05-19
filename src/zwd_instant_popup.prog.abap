@@ -280,6 +280,7 @@ FORM execute.
 
   ls_class-clsname = ls_assist-clsname.
   ls_class-exposure = 2.
+  ls_class-state = 1.
   ls_class-fixpt = abap_true.
   ls_class-unicode = abap_true.
   ls_class_descriptions-clsname = ls_assist-clsname.
