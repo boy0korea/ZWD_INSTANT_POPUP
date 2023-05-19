@@ -18,6 +18,7 @@ FORM execute.
         lv_error              TYPE flag,
         lv_devclass           TYPE devclass,
         lv_corrnr             TYPE trkorr,
+        lo_cx_wd              TYPE REF TO cx_wdy_md_exception,
         lo_component          TYPE REF TO if_wdy_md_component,
         lo_controller         TYPE REF TO if_wdy_md_controller,
         lo_method             TYPE REF TO if_wdy_md_controller_method,
@@ -76,15 +77,19 @@ FORM execute.
     MESSAGE ls_assist-clsname && ` already exist` TYPE 'E'.
   ENDIF.
 
-  cl_wdy_md_component=>create_complete(
-    EXPORTING
-      name          = p_wdcomp      " Component Name
-    IMPORTING
-      component     = lo_component " Component Reference
-    CHANGING
-      devclass      = lv_devclass  " Package
-      corrnr        = lv_corrnr    " Request/Task
-  ).
+  TRY .
+      cl_wdy_md_component=>create_complete(
+        EXPORTING
+          name          = p_wdcomp      " Component Name
+        IMPORTING
+          component     = lo_component " Component Reference
+        CHANGING
+          devclass      = lv_devclass  " Package
+          corrnr        = lv_corrnr    " Request/Task
+      ).
+    CATCH cx_wdy_md_exception INTO lo_cx_wd.
+      MESSAGE lo_cx_wd->get_text( ) TYPE 'E'.
+  ENDTRY.
   lv_description = p_title.
   lo_component->if_wdy_md_object~set_description( lv_description ).
   lo_component->set_assistance_class( ls_assist-clsname ).
