@@ -48,12 +48,14 @@ FORM execute.
         ls_objects            TYPE dwinactiv,
         lo_cross              TYPE REF TO cl_wb_crossreference,
         lv_include            TYPE programm,
+        lv_string             TYPE string,
         lv_offset             TYPE i.
 
   " check exist WD
   lv_error = cl_wdy_md_component=>check_existency( p_wdcomp ).
   IF lv_error EQ abap_true.
-    MESSAGE p_wdcomp && ` already exist` TYPE 'E'.
+    lv_string = p_wdcomp && ` already exist`.
+    MESSAGE lv_string TYPE 'E'.
   ENDIF.
 
   " check exist class
@@ -74,7 +76,8 @@ FORM execute.
       not_existing = 2
       OTHERS       = 6.
   IF sy-subrc <> 2.
-    MESSAGE ls_assist-clsname && ` already exist` TYPE 'E'.
+    lv_string = ls_assist-clsname && ` already exist`.
+    MESSAGE lv_string TYPE 'E'.
   ENDIF.
 
   TRY .
@@ -88,7 +91,8 @@ FORM execute.
           corrnr        = lv_corrnr    " Request/Task
       ).
     CATCH cx_wdy_md_exception INTO lo_cx_wd.
-      MESSAGE lo_cx_wd->get_text( ) TYPE 'E'.
+      lv_string = lo_cx_wd->get_text( ).
+      MESSAGE lv_string TYPE 'E'.
   ENDTRY.
   lv_description = p_title.
   lo_component->if_wdy_md_object~set_description( lv_description ).
@@ -103,7 +107,9 @@ FORM execute.
 
   lo_method = lo_controller->create_method( name = 'OPEN_POPUP' ).
   lo_method->set_visibility( visibility = 2 ).
-  CAST cl_wdy_md_procedure( lo_method )->set_is_interface_item( abap_true ).
+  DATA: lo_cl_wdy_md_procedure TYPE REF TO cl_wdy_md_procedure.
+  lo_cl_wdy_md_procedure ?= lo_method.
+  lo_cl_wdy_md_procedure->set_is_interface_item( abap_true ).
   lo_parameter = lo_method->create_parameter( 'IO_COMP_USAGE' ).
   lo_parameter->set_abap_typing( 1 ).
   lo_parameter->set_abap_type( 'IF_WD_COMPONENT_USAGE' ).
@@ -339,9 +345,9 @@ FORM execute.
   APPEND ls_method TO lt_method.
   CLEAR: ls_method_source.
   ls_method_source-cpdname = 'README'.
-  APPEND `  METHOD readme.` TO ls_method_source-source.
+*  APPEND `  METHOD readme.` TO ls_method_source-source.
   APPEND `* https://github.com/boy0korea/ZWD_INSTANT_POPUP` TO ls_method_source-source.
-  APPEND `  ENDMETHOD.` TO ls_method_source-source.
+*  APPEND `  ENDMETHOD.` TO ls_method_source-source.
   APPEND ls_method_source TO lt_method_source.
 
   CLEAR: ls_method.
@@ -354,10 +360,12 @@ FORM execute.
   APPEND ls_method TO lt_method.
   CLEAR: ls_method_source.
   ls_method_source-cpdname = 'CLASS_CONSTRUCTOR'.
-  APPEND `  METHOD class_constructor.` TO ls_method_source-source.
-  APPEND `    gv_wd_comp_id = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( go_wd_comp ) )->get_referenced_type( )->get_relative_name( ).` TO ls_method_source-source.
+*  APPEND `  METHOD class_constructor.` TO ls_method_source-source.
+  APPEND `    DATA: lo_ref TYPE REF TO cl_abap_refdescr.` TO ls_method_source-source.
+  APPEND `    lo_ref ?= cl_abap_typedescr=>describe_by_data( go_wd_comp ).` TO ls_method_source-source.
+  APPEND `    gv_wd_comp_id = lo_ref->get_referenced_type( )->get_relative_name( ).` TO ls_method_source-source.
   APPEND `    REPLACE 'IWCI_' IN gv_wd_comp_id WITH ''.` TO ls_method_source-source.
-  APPEND `  ENDMETHOD.` TO ls_method_source-source.
+*  APPEND `  ENDMETHOD.` TO ls_method_source-source.
   APPEND ls_method_source TO lt_method_source.
 
   CLEAR: ls_method.
@@ -368,19 +376,20 @@ FORM execute.
   APPEND ls_method TO lt_method.
   CLEAR: ls_method_source.
   ls_method_source-cpdname = 'DO_CALLBACK'.
-  APPEND `  METHOD do_callback.` TO ls_method_source-source.
-  APPEND `    DATA: lv_event_id   TYPE fpm_event_id,` TO ls_method_source-source.
-  APPEND `          lo_fpm        TYPE REF TO if_fpm,` TO ls_method_source-source.
-  APPEND `          lo_event      TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
-  APPEND `          lo_event_orig TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
-  APPEND `          lt_key        TYPE TABLE OF string,` TO ls_method_source-source.
-  APPEND `          lv_key        TYPE string,` TO ls_method_source-source.
-  APPEND `          lr_value      TYPE REF TO data,` TO ls_method_source-source.
-  APPEND `          lv_action     TYPE string,` TO ls_method_source-source.
-  APPEND `          lo_view       TYPE REF TO cl_wdr_view,` TO ls_method_source-source.
-  APPEND `          lo_action     TYPE REF TO if_wdr_action,` TO ls_method_source-source.
-  APPEND `          lt_param      TYPE wdr_name_value_list,` TO ls_method_source-source.
-  APPEND `          ls_param      TYPE wdr_name_value.` TO ls_method_source-source.
+*  APPEND `  METHOD do_callback.` TO ls_method_source-source.
+  APPEND `    DATA: lv_event_id    TYPE fpm_event_id,` TO ls_method_source-source.
+  APPEND `          lo_fpm         TYPE REF TO if_fpm,` TO ls_method_source-source.
+  APPEND `          lo_event       TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
+  APPEND `          lo_event_orig  TYPE REF TO cl_fpm_event,` TO ls_method_source-source.
+  APPEND `          lt_key         TYPE TABLE OF string,` TO ls_method_source-source.
+  APPEND `          lv_key         TYPE string,` TO ls_method_source-source.
+  APPEND `          lr_value       TYPE REF TO data,` TO ls_method_source-source.
+  APPEND `          lv_action      TYPE string,` TO ls_method_source-source.
+  APPEND `          lx_wdr_runtime TYPE REF TO cx_wdr_runtime,` TO ls_method_source-source.
+  APPEND `          lo_view        TYPE REF TO cl_wdr_view,` TO ls_method_source-source.
+  APPEND `          lo_action      TYPE REF TO if_wdr_action,` TO ls_method_source-source.
+  APPEND `          lt_param       TYPE wdr_name_value_list,` TO ls_method_source-source.
+  APPEND `          ls_param       TYPE wdr_name_value.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `**********************************************************************` TO ls_method_source-source.
@@ -438,7 +447,7 @@ FORM execute.
   APPEND `` TO ls_method_source-source.
   APPEND `      TRY.` TO ls_method_source-source.
   APPEND `          lo_action = lo_view->get_action_internal( lv_action ).` TO ls_method_source-source.
-  APPEND `        CATCH cx_wdr_runtime INTO DATA(lx_wdr_runtime).` TO ls_method_source-source.
+  APPEND `        CATCH cx_wdr_runtime INTO lx_wdr_runtime.` TO ls_method_source-source.
   APPEND `          wdr_task=>application->component->if_wd_controller~get_message_manager( )->report_error_message( lx_wdr_runtime->get_text( ) ).` TO ls_method_source-source.
   APPEND `      ENDTRY.` TO ls_method_source-source.
   APPEND `      CHECK: lo_action IS NOT INITIAL.` TO ls_method_source-source.
@@ -468,7 +477,7 @@ FORM execute.
   APPEND `      lo_action->fire( ).` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `    ENDIF.` TO ls_method_source-source.
-  APPEND `  ENDMETHOD.` TO ls_method_source-source.
+*  APPEND `  ENDMETHOD.` TO ls_method_source-source.
   APPEND ls_method_source TO lt_method_source.
 
   CLEAR: ls_method.
@@ -482,9 +491,9 @@ FORM execute.
   APPEND ls_method TO lt_method.
   CLEAR: ls_method_source.
   ls_method_source-cpdname = 'ON_CLOSE'.
-  APPEND `  METHOD on_close.` TO ls_method_source-source.
+*  APPEND `  METHOD on_close.` TO ls_method_source-source.
   APPEND `    mo_comp_usage->delete_component( ).` TO ls_method_source-source.
-  APPEND `  ENDMETHOD.` TO ls_method_source-source.
+*  APPEND `  ENDMETHOD.` TO ls_method_source-source.
   APPEND ls_method_source TO lt_method_source.
 
   CLEAR: ls_method.
@@ -505,12 +514,13 @@ FORM execute.
   APPEND ls_param TO lt_param.
   CLEAR: ls_method_source.
   ls_method_source-cpdname = 'ON_OK'.
-  APPEND `  METHOD on_ok.` TO ls_method_source-source.
+*  APPEND `  METHOD on_ok.` TO ls_method_source-source.
   APPEND `    DATA: lt_callstack   TYPE abap_callstack,` TO ls_method_source-source.
   APPEND `          ls_callstack   TYPE abap_callstack_line,` TO ls_method_source-source.
   APPEND `          lo_class_desc  TYPE REF TO cl_abap_classdescr,` TO ls_method_source-source.
   APPEND `          ls_method_desc TYPE abap_methdescr,` TO ls_method_source-source.
-  APPEND `          ls_param_desc  TYPE abap_parmdescr.` TO ls_method_source-source.
+  APPEND `          ls_param_desc  TYPE abap_parmdescr,` TO ls_method_source-source.
+  APPEND `          lv_string      TYPE string.` TO ls_method_source-source.
   APPEND `    FIELD-SYMBOLS: <lv_value> TYPE any.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `    CALL FUNCTION 'SYSTEM_CALLSTACK'` TO ls_method_source-source.
@@ -523,16 +533,17 @@ FORM execute.
   APPEND `    READ TABLE lo_class_desc->methods INTO ls_method_desc WITH KEY name = ls_callstack-blockname.` TO ls_method_source-source.
   APPEND `    LOOP AT ls_method_desc-parameters INTO ls_param_desc WHERE parm_kind = cl_abap_classdescr=>importing.` TO ls_method_source-source.
   APPEND `      ASSIGN (ls_param_desc-name) TO <lv_value>.` TO ls_method_source-source.
+  APPEND `      lv_string = ls_param_desc-name.` TO ls_method_source-source.
   APPEND `      mo_event_data->set_value(` TO ls_method_source-source.
   APPEND `        EXPORTING` TO ls_method_source-source.
-  APPEND `          iv_key   = CONV #( ls_param_desc-name )` TO ls_method_source-source.
+  APPEND `          iv_key   = lv_string` TO ls_method_source-source.
   APPEND `          iv_value = <lv_value>` TO ls_method_source-source.
   APPEND `      ).` TO ls_method_source-source.
   APPEND `    ENDLOOP.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `    do_callback( ).` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
-  APPEND `  ENDMETHOD.` TO ls_method_source-source.
+*  APPEND `  ENDMETHOD.` TO ls_method_source-source.
   APPEND ls_method_source TO lt_method_source.
 
   CLEAR: ls_method.
@@ -553,7 +564,7 @@ FORM execute.
   APPEND ls_param TO lt_param.
   CLEAR: ls_method_source.
   ls_method_source-cpdname = 'OPEN_POPUP'.
-  APPEND `  METHOD open_popup.` TO ls_method_source-source.
+*  APPEND `  METHOD open_popup.` TO ls_method_source-source.
   APPEND `* Please call fpm_popup( ) or wd_popup( ).` TO ls_method_source-source.
   APPEND `    DATA: lo_comp_usage TYPE REF TO if_wd_component_usage.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
@@ -574,7 +585,7 @@ FORM execute.
   APPEND `        io_event_data = io_event_data` TO ls_method_source-source.
   APPEND `        io_comp_usage = lo_comp_usage` TO ls_method_source-source.
   APPEND `    ).` TO ls_method_source-source.
-  APPEND `  ENDMETHOD.` TO ls_method_source-source.
+*  APPEND `  ENDMETHOD.` TO ls_method_source-source.
   APPEND ls_method_source TO lt_method_source.
 
   CLEAR: ls_method.
@@ -617,8 +628,9 @@ FORM execute.
   APPEND ls_param TO lt_param.
   CLEAR: ls_method_source.
   ls_method_source-cpdname = 'WD_POPUP'.
-  APPEND `  METHOD wd_popup.` TO ls_method_source-source.
-  APPEND `    DATA: lo_event_data TYPE REF TO if_fpm_parameter.` TO ls_method_source-source.
+*  APPEND `  METHOD wd_popup.` TO ls_method_source-source.
+  APPEND `    DATA: lo_event_data TYPE REF TO if_fpm_parameter,` TO ls_method_source-source.
+  APPEND `          lo_wdr_view   TYPE REF TO cl_wdr_view.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `    IF io_event_data IS NOT INITIAL.` TO ls_method_source-source.
   APPEND `      lo_event_data = io_event_data.` TO ls_method_source-source.
@@ -632,14 +644,15 @@ FORM execute.
   APPEND `        iv_value = iv_callback_action` TO ls_method_source-source.
   APPEND `    ).` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
+  APPEND `    lo_wdr_view ?= io_view.` TO ls_method_source-source.
   APPEND `    lo_event_data->set_value(` TO ls_method_source-source.
   APPEND `      EXPORTING` TO ls_method_source-source.
   APPEND `        iv_key   = 'IO_VIEW'` TO ls_method_source-source.
-  APPEND `        iv_value = CAST cl_wdr_view( io_view )` TO ls_method_source-source.
+  APPEND `        iv_value = lo_wdr_view` TO ls_method_source-source.
   APPEND `    ).` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `    open_popup( lo_event_data ).` TO ls_method_source-source.
-  APPEND `  ENDMETHOD.` TO ls_method_source-source.
+*  APPEND `  ENDMETHOD.` TO ls_method_source-source.
   APPEND ls_method_source TO lt_method_source.
 
   CLEAR: ls_method.
@@ -683,7 +696,7 @@ FORM execute.
   APPEND ls_param TO lt_param.
   CLEAR: ls_method_source.
   ls_method_source-cpdname = 'FPM_POPUP'.
-  APPEND `  METHOD fpm_popup.` TO ls_method_source-source.
+*  APPEND `  METHOD fpm_popup.` TO ls_method_source-source.
   APPEND `    DATA: lo_event_data TYPE REF TO if_fpm_parameter.` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `    IF io_event_data IS NOT INITIAL.` TO ls_method_source-source.
@@ -708,7 +721,7 @@ FORM execute.
   APPEND `` TO ls_method_source-source.
   APPEND `` TO ls_method_source-source.
   APPEND `    open_popup( lo_event_data ).` TO ls_method_source-source.
-  APPEND `  ENDMETHOD.` TO ls_method_source-source.
+*  APPEND `  ENDMETHOD.` TO ls_method_source-source.
   APPEND ls_method_source TO lt_method_source.
 
   CALL FUNCTION 'SEO_CLASS_CREATE_COMPLETE'
@@ -734,7 +747,6 @@ FORM execute.
 *     lock_handle                    = lock_handle                    " Lock Handle
 *     suppress_unlock                = suppress_unlock
 *     suppress_commit                = suppress_commit                " No DB_COMMIT will be executed
-      generate_method_impls_wo_frame = abap_true " X -> METHOD_SOURCES have to contain METHOD and ENDMETHOD statements
 *    IMPORTING
 *     korrnr                         = lv_corrnr                         " Request/Task
     TABLES
@@ -821,4 +833,4 @@ FORM execute.
       WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
   ENDIF.
 
-ENDFORM.
+ENDFORM.                    "execute
